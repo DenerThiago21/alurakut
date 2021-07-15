@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MainGrid from '../src/components/MainGrid';
 import Box from '../src/components/Box';
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
@@ -22,6 +22,28 @@ const ProfileSidebar = (props) => {
   );
 }
 
+function ProfileRelationsBox(props) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">{props.title} ({props.items.length})</h2>
+      <ul>
+        {/*
+          pessoasFavoritas.map((pessoa) => {
+            return (
+              <li key={pessoa}>
+                <a href={`/users/${pessoa}`}>
+                  <img src={`https://github.com/${pessoa}.png`} />
+                  <span>{pessoa}</span>
+                </a>
+              </li>
+            );
+          })
+            */}
+      </ul>
+    </ProfileRelationsBoxWrapper>
+  );
+}
+
 export default function Home() {
   
   const [comunidades, setComunidades] = useState([{
@@ -40,6 +62,18 @@ export default function Home() {
     'marcobrunodev',
     'felipefialho'
   ];
+
+  const [seguidores, setSeguidores] = useState([]);
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${usrGitHub}/followers`)
+    .then((response) => {
+      return (response.json());
+    })
+    .then((completeResponse) => {
+      setSeguidores(completeResponse);
+    });
+  }, []);
 
   return (
     <>
@@ -91,6 +125,7 @@ export default function Home() {
           </Box>
         </div>
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
+          <ProfileRelationsBox title="seguidores" items={seguidores} />
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">comunidades ({comunidades.length})</h2>
             <ul>
