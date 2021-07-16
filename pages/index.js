@@ -75,11 +75,11 @@ export default function Home() {
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
-        'authorization': '6a391118be936de17a677ba3503915',
-        'Content-type': 'application/json',
+        'Authorization': '6a391118be936de17a677ba3503915',
+        'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({'query': `query {
+      body: JSON.stringify({"query": `query {
         allCommunities {
           id
           title
@@ -116,13 +116,24 @@ export default function Home() {
               const dadosForm = new FormData(e.target);
 
               const comunidade = {
-                id: new Date().toISOString(),
                 title: dadosForm.get('title'),
                 image: dadosForm.get('image'),
+                creatorSlug: usrGitHub
               }
 
-              const comunidadesAtualizadas = [...comunidades, comunidade];
-              setComunidades(comunidadesAtualizadas);
+              fetch('/api/comunidades', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(comunidade)
+              })
+              .then(async (response) => {
+                const dados = await response.json();
+                const comunidade = dados.registroCriado;
+                const comunidadesAtualizadas = [...comunidades, comunidade];
+                setComunidades(comunidadesAtualizadas);
+              })
 
             }}>
               <div>
@@ -153,13 +164,13 @@ export default function Home() {
               {
                 comunidades.map((comunidade) => {
                   return (
-                    <li  key={comunidade.id}>
+                    <li key={comunidade.id}>
                       <a href={`/communities/${comunidade.id}`}>
-                        <img src={comunidade.image} /> 
+                        <img src={comunidade.image} />
                         <span>{comunidade.title}</span>
                       </a>
                     </li>
-                  );
+                  )
                 })
               }
             </ul>
